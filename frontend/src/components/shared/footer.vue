@@ -4,20 +4,22 @@
       <ul>
         <li>
           <IconBtn class="nav-btn">
-            <img src="/assets/icon/main.svg" alt="">
-          </IconBtn>
-        </li>
-        <li>
-          <IconBtn class="search-btn">
-            <div class="btn-content">
               <img src="/assets/icon/search.svg" alt="">
-              <span>Поиск</span>
-            </div>
           </IconBtn>
         </li>
         <li>
           <IconBtn class="nav-btn">
             <img src="/assets/icon/line.svg" alt="">
+          </IconBtn>
+        </li>
+        <li>
+          <IconBtn class="nav-btn">
+            <img src="/assets/icon/main.svg" alt="">
+          </IconBtn>
+        </li>
+        <li>
+          <IconBtn class="nav-btn">
+            <img src="/assets/icon/MapPin.svg" alt="">
           </IconBtn>
         </li>
         <li>

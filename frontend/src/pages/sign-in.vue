@@ -10,78 +10,49 @@
         <p>Войди в систему, чтобы продолжить</p>
       </div>
       <div class="logo">
-        <img src="../../public/assets/icon/logo.svg" atl="Логотип"></img>
+        <img src="/public/assets/icon/logo.svg" atl="Логотип"></img>
       </div>
-      <form @submit.prevent="handleLogin">
-        <NInput
-          v-model:value="username"
-          placeholder="Логин"
-          :status="error ? 'error' : ''"
-        ></NInput>
-        <NInput
-          v-model:value="password"
-          type="password"
-          placeholder="Пароль"
-          :status="error ? 'error' : ''"
-          show-password-on="click"
-        ></NInput>
-        <button type="button">Забыли свой пароль?</button>
+      <form @submit.prevent="handleSubmit">
+        <NInput placeholder="Логин" v-model:value="formData.username"></NInput>
+        <NInput placeholder="Пароль" v-model:value="formData.password"></NInput>
+        <button>Забыли свой пароль?</button>
       </form>
-      <NButton
-        type="primary"
-        @click="handleLogin"
-        :loading="loading"
-      >Войти</NButton>
+      <NButton type="primary" @click="handleSubmit">Войти</NButton>
     </div>
   </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { NInput, NButton } from 'naive-ui';
+import { NInput } from 'naive-ui';
+import { NButton } from 'naive-ui';
 import IconBtn from '@/components/ui/icon-btn.vue';
 import { useDataStore } from '@/stores/counter';
+import router from '@/router';
 
-const router = useRouter();
-const dataStore = useDataStore();
+const store = useDataStore();
 
-const username = ref('');
-const password = ref('');
-const loading = ref(false);
-const error = ref(false);
+const formData = ref({
+  username: '',
+  password: ''
+})
 
-const handleLogin = async () => {
-  if (!username.value || !password.value) {
-    error.value = true;
-    return;
-  }
-
-  loading.value = true;
-  error.value = false;
-
+const handleSubmit = async () => {
   try {
-    const loginData = {
-      username: username.value,
-      password: password.value
-    };
+    const formDataToSend = new FormData();
+    formDataToSend.append('username', formData.value.username);
+    formDataToSend.append('password', formData.value.password);
 
-    const response = await dataStore.loginUser(loginData);
-
-    // Сохраняем токен если он есть в ответе
-    if (response.token) {
-      dataStore.auth_key = response.token;
-      dataStore.role = response.role || 'user';
+    await store.PostLoginUser(formDataToSend);
+    alert('Вход выполнен успешно!');
+    router.back();
+  } catch (error) {
+    if (error.response?.status === 401) {
+      alert('Неверные учетные данные');
+    } else {
+      alert('Произошла ошибка при входе');
     }
-
-    // Перенаправляем на главную
-    router.push('/');
-
-  } catch (err) {
-    error.value = true;
-    console.error('Ошибка входа:', err);
-  } finally {
-    loading.value = false;
+    console.error('Ошибка входа', error);
   }
 };
 </script>
