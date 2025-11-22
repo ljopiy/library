@@ -6,25 +6,44 @@
         ref="mapImage"
         src="/assets/map.jpg"
         alt="План помещения"
-        usemap="#roomMap"
         class="map-image"
         @load="onImageLoad"
       />
 
-      <!-- HTML Image Map -->
-      <map name="roomMap">
-        <area
-          v-for="area in areas"
+      <!-- SVG overlay для полигонов -->
+      <svg
+        v-if="imageSize.width > 0"
+        class="hotspots-overlay"
+        :viewBox="`0 0 ${imageSize.naturalWidth} ${imageSize.naturalHeight}`"
+        :style="{
+          width: imageSize.width + 'px',
+          height: imageSize.height + 'px'
+        }"
+      >
+        <!-- Полигоны -->
+        <polygon
+          v-for="area in polyAreas"
           :key="area.id"
-          :shape="area.shape"
-          :coords="area.coords"
-          :alt="area.title"
+          :points="area.coords.join(',')"
+          class="hotspot-polygon"
+          :class="{ 'hotspot-hovered': hoveredArea === area.id }"
           @mouseover="handleAreaHover(area.id)"
           @mouseout="handleAreaOut"
           @click="handleAreaClick(area.id)"
-          :class="{ 'area-highlighted': hoveredArea === area.id }"
         />
-      </map>
+      </svg>
+
+      <!-- Rect области поверх SVG -->
+      <div
+        v-for="area in rectAreas"
+        :key="area.id"
+        class="hotspot-rect"
+        :class="{ 'hotspot-hovered': hoveredArea === area.id }"
+        :style="getRectStyle(area)"
+        @mouseover="handleAreaHover(area.id)"
+        @mouseout="handleAreaOut"
+        @click="handleAreaClick(area.id)"
+      ></div>
 
       <!-- Всплывающая подсказка -->
       <div
@@ -51,25 +70,25 @@
       </div>
       <button @click="selectedArea = null" class="close-btn">Закрыть</button>
     </div>
-
-    <!-- Дебаг информация (можно удалить в продакшене) -->
-    <div v-if="debugMode" class="debug-info">
-      <h4>Отладка:</h4>
-      <p>Наведено на: {{ hoveredArea || 'нет' }}</p>
-      <p>Выбрано: {{ selectedArea?.title || 'нет' }}</p>
-      <p>Координаты курсора: X: {{ mousePosition.x }}, Y: {{ mousePosition.y }}</p>
-      <button @click="toggleDebug" class="debug-btn">Скрыть отладку</button>
-    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 
 // Состояния
 const hoveredArea = ref(null);
 const selectedArea = ref(null);
-const debugMode = ref(true); // Поставьте false чтобы скрыть отладку
+const debugMode = ref(true);
+const mapImage = ref(null);
+
+// Размеры изображения
+const imageSize = reactive({
+  width: 0,
+  height: 0,
+  naturalWidth: 0,
+  naturalHeight: 0
+});
 
 // Данные для тултипа
 const tooltip = reactive({
@@ -78,133 +97,139 @@ const tooltip = reactive({
   y: 0
 });
 
-// Позиция курсора
-const mousePosition = reactive({
-  x: 0,
-  y: 0
-});
-
-
-{/* <map name="image-map">
-    <area target="" alt="10" title="10" href="" coords="406,434,678,426,677,318,596,313,596,229,402,232,403,290" shape="poly">
-    <area target="" alt="5" title="5" href="" coords="159,232,156,99,305,94,310,233,160,233" shape="poly">
-    <area target="" alt="7" title="7" href="" coords="159,294,158,242,219,241,220,294,192,295" shape="poly">
-    <area target="" alt="9" title="9" href="" coords="323,227,319,97,594,98,595,225,322,231" shape="poly">
-    <area target="" alt="14" title="14" href="" coords="322,235,397,234,403,431,324,434" shape="poly">
-    <area target="" alt="11" title="11" href="" coords="682,259,611,299" shape="rect">
-    <area target="" alt="12" title="12" href="" coords="694,258,924,433" shape="rect">
-    <area target="" alt="13" title="13" href="" coords="692,139,924,247" shape="rect">
-    <area target="" alt="13.2" title="13.2" href="" coords="693,50,784,133" shape="rect">
-    <area target="" alt="13.1" title="13.1" href="" coords="792,52,921,132" shape="rect">
-</map> --> */}
-
-// Данные о зонах помещения
-const areas = ref([
+// Оригинальные координаты
+const originalAreas = ref([
   {
-    id: 'event hall',
+    id: 'event_hall',
     shape: 'poly',
-    coords: '406,434,678,426,677,318,596,313,596,229,402,232,403,290',
+    coords: [406,434,678,426,677,318,596,313,596,229,402,232,403,290],
     title: 'Событийный зал',
     description: 'Многофункциональный зал оборудованный мультимедийной техникой',
-    area: 25,
-    capacity: 2,
-    equipment: 'Компьютер, телефон, принтер'
+    area: 120,
+    capacity: 80,
+    equipment: 'Проектор, экран, звуковая система'
   },
   {
-    id: 'Chiled',
+    id: 'children',
     shape: 'poly',
-    coords: '159,232,156,99,305,94,310,233,160,233',
+    coords: [159,232,156,99,305,94,310,233,160,233],
     title: 'Абонемент для детей',
     description: 'Игровая комната',
-    area: 20,
-    capacity: 6,
-    equipment: 'Телевизор, маркерная доска'
+    area: 45,
+    capacity: 20,
+    equipment: 'Игры, книги, развивающие материалы'
   },
   {
-    id: 'Wardrobe',
+    id: 'wardrobe',
     shape: 'poly',
-    coords: '159,294,158,242,219,241,220,294,192,295',
+    coords: [159,294,158,242,219,241,220,294,192,295],
     title: 'Гардеробная',
     description: 'Место для хранения вашей верхней одежды',
-    area: 30,
-    capacity: 12,
-    equipment: 'Проектор, конференц-система'
+    area: 15,
+    capacity: 50,
+    equipment: 'Вешалки, полки'
   },
   {
-    id: 'sub',
+    id: 'subscription',
     shape: 'poly',
-    coords: '323,227,319,97,594,98,595,225,322,231',
+    coords: [323,227,319,97,594,98,595,225,322,231],
     title: 'Абонемент',
     description: 'Загадочное пространство, приходи и узнай сам!',
-    area: 18,
-    capacity: 8,
-    equipment: 'Микроволновка, холодильник, кофемашина'
+    area: 85,
+    capacity: 25,
+    equipment: 'Компьютеры, принтер'
   },
   {
-    id: 'Reading hall',
+    id: 'reading_hall',
     shape: 'poly',
-    coords: '322,235,397,234,403,431,324,434',
+    coords: [322,235,397,234,403,431,324,434],
     title: 'Читальный зал',
     description: 'Пространство для чтения, стилизованное под вагон поезда',
-    area: 4,
-    capacity: 1,
-    equipment: 'Компьютер, монитор'
+    area: 65,
+    capacity: 30,
+    equipment: 'Столы, стулья, книги'
   },
   {
-    id: 'Books room',
+    id: 'books_room',
     shape: 'rect',
-    coords: '682,259,611,299',
+    coords: [611,259,682,299],
     title: 'Хранилище книг',
     description: 'Спальная комната книг, просьба беспокоить как можно чаще!',
-    area: 4,
-    capacity: 1,
-    equipment: 'Компьютер, монитор'
+    area: 25,
+    capacity: 5,
+    equipment: 'Стеллажи, книги'
   },
-    {
-    id: 'Youth room',
+  {
+    id: 'youth_room',
     shape: 'rect',
-    coords: '694,258,924,433',
+    coords: [694,258,924,433],
     title: 'Молодёжный зал',
     description: 'Многофункциональный зал с амфитеатром',
-    area: 4,
-    capacity: 1,
-    equipment: 'Компьютер, монитор'
+    area: 150,
+    capacity: 60,
+    equipment: 'Амфитеатр, мультимедиа'
   },
   {
-    id: 'Arts room',
+    id: 'arts_room',
     shape: 'rect',
-    coords: '692,139,924,247',
+    coords: [692,139,924,247],
     title: 'Зал искусств',
     description: 'Арт-галерея, многофункциональное пространство',
-    area: 4,
-    capacity: 1,
-    equipment: 'Компьютер, монитор'
+    area: 120,
+    capacity: 40,
+    equipment: 'Выставочное пространство'
   },
   {
-    id: 'Media',
+    id: 'media',
     shape: 'rect',
-    coords: '693,50,784,133',
+    coords: [693,50,784,133],
     title: 'Медиа среда',
     description: 'Здесь создаются инфо поводы!',
-    area: 4,
-    capacity: 1,
-    equipment: 'Компьютер, монитор'
+    area: 35,
+    capacity: 10,
+    equipment: 'Компьютеры, фотоаппаратура'
   },
   {
-    id: 'Project office',
+    id: 'project_office',
     shape: 'rect',
-    coords: '792,52,921,132',
+    coords: [792,52,921,132],
     title: 'Проектный офис',
     description: 'Место где идея становиться реальностью!',
-    area: 4,
-    capacity: 1,
-    equipment: 'Компьютер, монитор'
+    area: 40,
+    capacity: 8,
+    equipment: 'Столы, доска для планирования'
   }
 ]);
 
+// Разделяем области на полигоны и прямоугольники
+const polyAreas = computed(() => {
+  return originalAreas.value.filter(area => area.shape === 'poly');
+});
+
+const rectAreas = computed(() => {
+  return originalAreas.value.filter(area => area.shape === 'rect');
+});
+
+// Стили для прямоугольников
+const getRectStyle = (area) => {
+  if (!imageSize.naturalWidth || !imageSize.naturalHeight) return {};
+
+  const scaleX = imageSize.width / imageSize.naturalWidth;
+  const scaleY = imageSize.height / imageSize.naturalHeight;
+
+  const [x1, y1, x2, y2] = area.coords;
+
+  return {
+    left: Math.round(x1 * scaleX) + 'px',
+    top: Math.round(y1 * scaleY) + 'px',
+    width: Math.round((x2 - x1) * scaleX) + 'px',
+    height: Math.round((y2 - y1) * scaleY) + 'px'
+  };
+};
+
 // Получение заголовка зоны
 const getAreaTitle = (areaId) => {
-  const area = areas.value.find(a => a.id === areaId);
+  const area = originalAreas.value.find(a => a.id === areaId);
   return area ? area.title : '';
 };
 
@@ -220,26 +245,35 @@ const handleAreaOut = () => {
 };
 
 const handleAreaClick = (areaId) => {
-  const area = areas.value.find(a => a.id === areaId);
+  const area = originalAreas.value.find(a => a.id === areaId);
   if (area) {
     selectedArea.value = area;
+    console.log('Выбрана область:', area.title);
   }
 };
 
 // Отслеживание движения курсора для тултипа
 const handleMouseMove = (event) => {
-  mousePosition.x = event.clientX;
-  mousePosition.y = event.clientY;
-
   if (tooltip.visible) {
-    tooltip.x = event.clientX + 10;
-    tooltip.y = event.clientY - 10;
+    tooltip.x = event.clientX + 15;
+    tooltip.y = event.clientY - 30;
   }
 };
 
 // Когда изображение загружено
 const onImageLoad = () => {
-  console.log('Изображение карты загружено');
+  if (mapImage.value) {
+    imageSize.width = mapImage.value.offsetWidth;
+    imageSize.height = mapImage.value.offsetHeight;
+    imageSize.naturalWidth = mapImage.value.naturalWidth;
+    imageSize.naturalHeight = mapImage.value.naturalHeight;
+
+    console.log('✅ Изображение загружено');
+    console.log('📏 Текущий размер:', imageSize.width, 'x', imageSize.height);
+    console.log('📐 Оригинальный размер:', imageSize.naturalWidth, 'x', imageSize.naturalHeight);
+    console.log('📍 Полигоны:', polyAreas.value.length);
+    console.log('📍 Прямоугольники:', rectAreas.value.length);
+  }
 };
 
 // Переключение режима отладки
@@ -273,6 +307,59 @@ onMounted(() => {
   border: 2px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  display: block;
+}
+
+/* SVG overlay для полигонов */
+.hotspots-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+.hotspots-overlay * {
+  pointer-events: all;
+}
+
+/* Стили для полигонов в SVG */
+.hotspot-polygon {
+  fill: transparent;
+  stroke: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.hotspot-polygon:hover {
+  fill: rgba(33, 150, 243, 0.3);
+  stroke: #2196F3;
+  stroke-width: 2;
+}
+
+.hotspot-polygon.hotspot-hovered {
+  fill: rgba(33, 150, 243, 0.5) !important;
+  stroke: #2196F3 !important;
+  stroke-width: 2 !important;
+}
+
+/* Стили для прямоугольников */
+.hotspot-rect {
+  position: absolute;
+  background: transparent;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  pointer-events: all;
+}
+
+.hotspot-rect:hover {
+  background: rgba(33, 150, 243, 0.3);
+  border-color: #2196F3;
+}
+
+.hotspot-rect.hotspot-hovered {
+  background: rgba(33, 150, 243, 0.5) !important;
+  border-color: #2196F3 !important;
 }
 
 /* Стили для тултипа */
@@ -321,36 +408,6 @@ onMounted(() => {
 
 .close-btn:hover {
   background: #0056b3;
-}
-
-/* Отладочная информация */
-.debug-info {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
-  padding: 15px;
-  border-radius: 4px;
-  font-size: 12px;
-  z-index: 1000;
-}
-
-.debug-btn {
-  margin-top: 10px;
-  padding: 5px 10px;
-  background: #ff6b6b;
-  color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 10px;
-}
-
-/* Стили для областей (работают ограниченно) */
-area {
-  cursor: pointer;
-  outline: none;
 }
 
 /* Медиа-запросы для мобильных устройств */
