@@ -6,6 +6,7 @@ from sqlalchemy import String, Enum, Boolean, DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .index import Base
+from .user_favorites import user_favorites
 from .users_roles import UserRoles
 
 
@@ -21,5 +22,11 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now)
 
     orders = relationship("Order", back_populates="user", cascade="all, delete-orphan", lazy="selectin")
-
     ticket = relationship("ReaderTicket", back_populates="user")
+
+    favorites = relationship(
+        "Book",
+        secondary=user_favorites,
+        back_populates="favorited_by",
+        lazy="selectin"
+    )

@@ -11,7 +11,7 @@ from services.librarian.book_copy_service import (
     delete_book_copy_service,
 )
 
-book_copy_router = APIRouter(prefix="/librarian/book_copies", tags=["Book Copies"])
+book_copy_router = APIRouter(prefix="/librarian/book_copies")
 
 
 @book_copy_router.post("/", response_model=BookCopyRead)

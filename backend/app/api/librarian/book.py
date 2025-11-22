@@ -1,15 +1,18 @@
 import uuid
 from pathlib import Path
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, Depends, UploadFile
+from fastapi import APIRouter, Depends, UploadFile, Query
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from api.dependencies import LibrarianUser, CurrentUser
+from api.dependencies import LibrarianUser
 from db.session import get_session
-from schemas.book import BookCreate, BookRead, BookUpdate, BookImageRead
-from services.librarian.book_service import create_book_service, update_book_service, delete_book_service, \
-    get_all_books_service, add_book_image_service, delete_book_image_service, get_book_service
+from models.book import Book
+from schemas.book import BookRead, BookUpdate, BookImageRead, BookCreate
+from services.librarian.book_service import update_book_service, delete_book_service, \
+    add_book_image_service, delete_book_image_service, get_book_service, create_book_service
 
 librarian_books_router = APIRouter(prefix="/librarian/books", tags=["Librarian Books"])
 UPLOAD_DIR = Path("static/uploads")
@@ -29,12 +32,41 @@ async def create_book(
 
 
 @librarian_books_router.get("/", response_model=List[BookRead])
-async def get_all_books(
-        current_user: CurrentUser,
+async def search_books(
         db: AsyncSession = Depends(get_session),
+        title: Optional[str] = Query(None, description="Поиск по названию"),
+        author: Optional[str] = Query(None, description="Поиск по автору"),
+        genre_id: Optional[int] = Query(None, description="Фильтр по жанру"),
+        language: Optional[str] = Query(None, description="Фильтр по языку"),
+        available: Optional[bool] = Query(None, description="Фильтр по доступности"),
+        sort_by: Optional[str] = Query("created_at", description="Поле сортировки"),
+        sort_order: Optional[str] = Query("desc", description="asc или desc"),
 ):
-    """Получение списка всех книг"""
-    return await get_all_books_service(db)
+    query = select(Book).options(
+        selectinload(Book.genres),
+        selectinload(Book.series),
+        selectinload(Book.images),
+    )
+
+    if title:
+        query = query.where(Book.title.ilike(f"%{title}%"))
+    if author:
+        query = query.where(Book.author.ilike(f"%{author}%"))
+    if genre_id:
+        query = query.join(Book.genres).where(Book.genres.any(id=genre_id))
+    if language:
+        query = query.where(Book.language == language)
+    if available is not None:
+        query = query.where(Book.available == available)
+
+    sort_column = getattr(Book, sort_by, Book.created_at)
+    if sort_order == "desc":
+        query = query.order_by(sort_column.desc())
+    else:
+        query = query.order_by(sort_column.asc())
+
+    result = await db.execute(query)
+    return result.scalars().all()
 
 
 @librarian_books_router.get("/{book_id}", response_model=BookRead)

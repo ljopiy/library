@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.dependencies import CurrentUser
+from api.dependencies import CurrentUser, LibrarianUser
 from db.session import get_session
 from schemas.order import OrderCreate, OrderRead
 from services.order.order_service import (
@@ -13,7 +13,7 @@ from services.order.order_service import (
     list_all_orders_service,
     get_order_service,
     issue_order_service,
-    return_order_service,
+    return_order_service, cancel_order_service, cancel_order_by_librarian_service,
 )
 from utilits.order_utilits import order_to_schema
 
@@ -51,7 +51,7 @@ async def prolong_order(
 
 @orders_router.get("/", response_model=List[OrderRead])
 async def list_orders_for_librarian(
-        current_user: CurrentUser,
+        current_user: LibrarianUser,
         db: AsyncSession = Depends(get_session),
 ):
     orders = await list_all_orders_service(db)
@@ -71,7 +71,7 @@ async def get_order(
 @orders_router.put("/{order_id}/issue", response_model=OrderRead)
 async def issue_order(
         order_id: int,
-        current_user: CurrentUser,
+        current_user: LibrarianUser,
         db: AsyncSession = Depends(get_session),
 ):
     order = await issue_order_service(order_id, db)
@@ -81,8 +81,28 @@ async def issue_order(
 @orders_router.put("/{order_id}/return", response_model=OrderRead)
 async def return_order(
         order_id: int,
-        current_user: CurrentUser,
+        current_user: LibrarianUser,
         db: AsyncSession = Depends(get_session),
 ):
     order = await return_order_service(order_id, db)
+    return order_to_schema(order)
+
+
+@orders_router.delete("/{order_id}/cancel", response_model=OrderRead)
+async def cancel_order(
+        order_id: int,
+        current_user: CurrentUser,
+        db: AsyncSession = Depends(get_session),
+):
+    order = await cancel_order_service(order_id, current_user.id, db)
+    return order_to_schema(order)
+
+
+@orders_router.delete("/{order_id}/cancel/by", response_model=OrderRead)
+async def cancel_order_by_librarian(
+        order_id: int,
+        current_user: LibrarianUser,
+        db: AsyncSession = Depends(get_session),
+):
+    order = await cancel_order_by_librarian_service(order_id, db)
     return order_to_schema(order)

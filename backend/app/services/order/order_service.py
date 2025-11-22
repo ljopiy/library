@@ -118,3 +118,45 @@ async def prolong_order_service(order_id: int, user_id: int, db: AsyncSession) -
     await db.commit()
     await db.refresh(order)
     return order
+
+
+async def cancel_order_service(order_id: int, user_id: int, db: AsyncSession) -> Order:
+    result = await db.execute(select(Order).where(Order.id == order_id, Order.user_id == user_id))
+    order = result.scalar_one_or_none()
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказ не найден")
+
+    if order.is_issued:
+        raise HTTPException(status_code=400, detail="Нельзя отменить уже выданный заказ")
+
+    if not order.is_active:
+        raise HTTPException(status_code=400, detail="Заказ уже неактивен")
+
+    for copy in order.copies:
+        copy.status = "available"
+
+    order.is_active = False
+    await db.commit()
+    await db.refresh(order)
+    return order
+
+
+async def cancel_order_by_librarian_service(order_id: int, db: AsyncSession) -> Order:
+    result = await db.execute(select(Order).where(Order.id == order_id))
+    order = result.scalar_one_or_none()
+
+    if not order:
+        raise HTTPException(status_code=404, detail="Заказ не найден")
+
+    if not order.is_active:
+        raise HTTPException(status_code=400, detail="Заказ уже неактивен")
+
+    # освобождаем экземпляры
+    for copy in order.copies:
+        copy.status = "available"
+
+    order.is_active = False
+    await db.commit()
+    await db.refresh(order)
+    return order
