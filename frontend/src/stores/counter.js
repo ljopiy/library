@@ -10,16 +10,17 @@ export const useDataStore = defineStore('data', {
     books: [],
   }),
   actions: {
-    async PostNewUser(jsonData) {
+    async loginUser(jsonData) {
       try {
-        const response = await axios.post(`${baseUrl}/api/auth/login`, jsonData, {
+        const response = await axios.post(`${baseUrl}api/auth/login`, jsonData, {
           headers: {
             'Content-Type': 'application/json',
           },
         })
-        console.log('Успешная регистрация:', response.data)
+        console.log('Успешный вход:', response.data)
+        return response.data
       } catch (error) {
-        console.error('Ошибка при регистрации:', error.response?.data || error.message)
+        console.error('Ошибка при входе:', error.response?.data || error.message)
         throw error
       }
     },

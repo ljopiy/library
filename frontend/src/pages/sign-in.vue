@@ -12,20 +12,78 @@
       <div class="logo">
         <img src="../../public/assets/icon/logo.svg" atl="Логотип"></img>
       </div>
-      <form>
-        <NInput placeholder="Логин"></NInput>
-        <NInput placeholder="Пароль"></NInput>
-        <button>Забыли свой пароль?</button>
+      <form @submit.prevent="handleLogin">
+        <NInput
+          v-model:value="username"
+          placeholder="Логин"
+          :status="error ? 'error' : ''"
+        ></NInput>
+        <NInput
+          v-model:value="password"
+          type="password"
+          placeholder="Пароль"
+          :status="error ? 'error' : ''"
+          show-password-on="click"
+        ></NInput>
+        <button type="button">Забыли свой пароль?</button>
       </form>
-      <NButton type="primary">Войти</NButton>
+      <NButton
+        type="primary"
+        @click="handleLogin"
+        :loading="loading"
+      >Войти</NButton>
     </div>
   </div>
 </template>
 
 <script setup>
-import { NInput } from 'naive-ui';
-import { NButton } from 'naive-ui';
-import iconBtn from '@/components/ui/icon-btn.vue';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { NInput, NButton } from 'naive-ui';
+import IconBtn from '@/components/ui/icon-btn.vue';
+import { useDataStore } from '@/stores/counter';
+
+const router = useRouter();
+const dataStore = useDataStore();
+
+const username = ref('');
+const password = ref('');
+const loading = ref(false);
+const error = ref(false);
+
+const handleLogin = async () => {
+  if (!username.value || !password.value) {
+    error.value = true;
+    return;
+  }
+
+  loading.value = true;
+  error.value = false;
+
+  try {
+    const loginData = {
+      username: username.value,
+      password: password.value
+    };
+
+    const response = await dataStore.loginUser(loginData);
+
+    // Сохраняем токен если он есть в ответе
+    if (response.token) {
+      dataStore.auth_key = response.token;
+      dataStore.role = response.role || 'user';
+    }
+
+    // Перенаправляем на главную
+    router.push('/');
+
+  } catch (err) {
+    error.value = true;
+    console.error('Ошибка входа:', err);
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <style scoped>
