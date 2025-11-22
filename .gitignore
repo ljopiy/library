@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pkl
+*.log
+
+# Virtual env
+.venv/
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Migrations / Alembic (если используешь и хочешь игнорить автоген)
+migrations/
+
+# Cache
+*.sqlite3
+*.db
+*.egg-info/
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Uvicorn / Gunicorn logs
+*.pid
+*.sock
+
+# Env variables
+backend/.env
+*.env
+
+# Docker (если вдруг используешь)
+docker-compose.override.yml
