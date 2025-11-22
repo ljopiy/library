@@ -55,7 +55,7 @@ ul {
 
 .main {
   background-image: url('../../public/assets/icon/map.PNG');
-  padding-bottom: 295px;
+  padding-bottom: 400px;
 }
 
 .header {

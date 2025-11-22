@@ -8,6 +8,7 @@ import BookCollection from '@/pages/bookCollection.vue'
 import Map from '@/components/map.vue'
 import bookingPage from '@/pages/bookingPage.vue'
 import bookingSuccess from '@/components/shared/bookingSuccess.vue'
+import bookPoint from '@/pages/bookPoint.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,6 +53,11 @@ const router = createRouter({
           name: 'Book',
           component: Book,
         },
+        {
+          path: '/book-point',
+          name: 'bookPoint',
+          component: bookPoint
+        }
       ]
     },
     {

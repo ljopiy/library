@@ -55,7 +55,7 @@ import Footer from '@/components/shared/footer.vue';
   display: flex;
   flex-direction: column;
   gap: 15px;
-  padding-bottom: 400px;
+  padding-bottom: 100px;
 }
 .likes {
   background-color: #F3F3F3;

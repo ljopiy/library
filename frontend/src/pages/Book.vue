@@ -77,6 +77,9 @@ import Footer from '@/components/shared/footer.vue';
 </script>
 
 <style>
+.page-wrapper {
+  padding-bottom: 200px;
+}
 .header {
   padding: 10px 19px;
 }
