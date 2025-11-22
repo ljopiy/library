@@ -42,5 +42,6 @@ const themeOverrides = {
     max-width: 400px;
     min-height: 100vh;
     margin: 0 auto;
+    padding: 15px 5px 0 5px;
   }
 </style>

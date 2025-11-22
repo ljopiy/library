@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <div class="header">
-      <IconBtn><img src='../../public/assets/icon-arrow.svg'></IconBtn>
+      <IconBtn><img src='../../public/assets/icon/icon-arrow.svg'></IconBtn>
       <h2>Авторизация</h2>
     </div>
     <div class="login">
@@ -10,7 +10,7 @@
         <p>Войди в систему, чтобы продолжить</p>
       </div>
       <div class="logo">
-        <img src="../../public/assets/logo.svg" atl="Логотип"></img>
+        <img src="../../public/assets/icon/logo.svg" atl="Логотип"></img>
       </div>
       <form>
         <NInput placeholder="Логин"></NInput>
