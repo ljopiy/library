@@ -35,9 +35,11 @@ const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 const app = createApp(App)
+
+app.use(pinia)
+app.use(router)
 app.use(NaiveUI, {
   themeOverrides: themeOverrides
 })
-app.use(pinia)
-app.use(router)
+
 app.mount('#app')
