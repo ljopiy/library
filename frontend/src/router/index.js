@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import SignIn from '@/pages/sign-in.vue'
+import BookCollection from '@/pages/bookCollection.vue'
 
 
 const router = createRouter({
@@ -9,6 +10,11 @@ const router = createRouter({
       path: '/sign-in',
       name: 'SignIn',
       component: SignIn,
+    },
+    {
+      path: '/book-collection',
+      name: 'BookCollection',
+      component: BookCollection,
     }
   ],
 })

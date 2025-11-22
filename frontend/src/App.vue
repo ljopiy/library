@@ -39,7 +39,8 @@ const themeOverrides = {
 <style scoped>
   .page-wrapper {
     max-width: 400px;
-    min-height: 100vh;
     margin: 0 auto;
+    background-color: rgb(184, 184, 184);
+    padding: 15px 5px 0px 5px;
   }
 </style>
