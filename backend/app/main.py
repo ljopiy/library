@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from starlette.staticfiles import StaticFiles
 
 from api.routes import api_router
 from core.logging import logger
@@ -17,7 +18,8 @@ async def lifespan(app: FastAPI):
     print("Stopping app...")
 
 
-app = FastAPI(title="DigitalStore CRM", lifespan=lifespan)
+app = FastAPI(title="Library Management System", lifespan=lifespan)
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,
@@ -37,9 +39,9 @@ app.include_router(api_router)
 def root():
     logger.info("Root endpoint accessed")
     return {
-        "message": "Добро пожаловать в DigitalStore CRM!",
+        "message": "Добро пожаловать в Library Management System!",
         "description": (
-            "API для управления продавцами, категориями, товарами и заказами."
+            "API для управления библиотекарями, пользователями, книгами, жанрами и сериями."
         ),
         "docs_url": "http://localhost:8000/docs#/",
         "redoc_url": "http://localhost:8000/redoc",

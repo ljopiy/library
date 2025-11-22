@@ -43,3 +43,4 @@ backend/.env
 
 # Docker (если вдруг используешь)
 docker-compose.override.yml
+/backend/app/static/

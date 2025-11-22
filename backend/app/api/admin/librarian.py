@@ -8,7 +8,7 @@ from core.logging import logger
 from db.session import get_session
 from models import UserRoles
 from schemas.user import UserRegisterResponse, UserRead, AdminUserUpdate
-from services.admin_service.librarin_service import list_librarians_service
+from services.admin_service.librarin_service import list_librarians_service, get_librarian_service
 from services.user_service.user_service import create_user, get_user_by_id
 
 admin_librarian_router = APIRouter(prefix="/admin/librarians")
@@ -118,3 +118,16 @@ async def list_librarians(
     Возвращает список всех библиотекарей.
     """
     return await list_librarians_service(db)
+
+
+@admin_librarian_router.get("/{user_id}", response_model=UserRead)
+async def get_librarian(
+        user_id: int,
+        current_user: AdminUser,
+        db: AsyncSession = Depends(get_session),
+):
+    """
+    Эндпоинт для админа.
+    Возвращает конкретного библиотекаря по ID.
+    """
+    return await get_librarian_service(user_id, db)

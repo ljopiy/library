@@ -1,6 +1,7 @@
 from datetime import datetime
 from random import randint
 
+from fastapi import HTTPException
 from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -69,4 +70,10 @@ async def authenticate_user_by_ticket(db: AsyncSession, ticket_id: str, password
         return None
     if not user.is_active:
         return None
+    return user
+
+async def get_user_service(user_id: int, db: AsyncSession):
+    user = await get_user_by_id(db, user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="Пользователь не найден")
     return user

@@ -1,12 +1,14 @@
-from fastapi import APIRouter
-from fastapi import Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.dependencies import LibrarianUser
+from core.logging import logger
 from db.session import get_session
-from schemas.user import UserRegisterResponse, UserCreateByLibrarian
+from models import UserRoles
+from schemas.user import UserRegisterResponse, UserCreateByLibrarian, UserRead, AdminUserUpdate
 from services.user_service.list_service import list_users_service
 from services.user_service.profile_service import update_profile_service
+from services.user_service.user_service import create_user, get_user_by_id, get_user_service
 
 librarian_user_router = APIRouter(prefix="/admin/users")
 
@@ -36,16 +38,6 @@ async def register_user_by_librarian(
         logger.error(f"Ошибка при регистрации пользователя библиотекарем: {e}")
         raise HTTPException(status_code=500, detail="Ошибка при создании пользователя")
 
-
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from api.dependencies import LibrarianUser
-from core.logging import logger
-from db.session import get_session
-from schemas.user import UserRegisterResponse, UserCreateByLibrarian, UserRead, AdminUserUpdate
-from services.user_service.user_service import create_user, get_user_by_id
-from models import UserRoles
 
 librarian_user_router = APIRouter(prefix="/admin/users", tags=["Librarian Users"])
 
@@ -128,3 +120,16 @@ async def get_users_list(
     except Exception as e:
         logger.error(f"Ошибка при получении списка пользователей: {e}")
         raise HTTPException(status_code=500, detail="Ошибка при получении списка пользователей")
+
+
+@librarian_user_router.get("/{user_id}", response_model=UserRead)
+async def get_user(
+        user_id: int,
+        current_user: LibrarianUser,
+        db: AsyncSession = Depends(get_session),
+):
+    """
+    Получение конкретного пользователя по ID.
+    Доступно библиотекарям и администраторам.
+    """
+    return await get_user_service(user_id, db)
