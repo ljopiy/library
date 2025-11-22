@@ -48,7 +48,6 @@ class Book(Base):
         lazy="selectin"
     )
 
-    # 🔹 удобное свойство для сериализации
     @property
     def genre_ids(self):
         return [genre.id for genre in self.genres]
