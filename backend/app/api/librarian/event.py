@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.dependencies import CurrentUser
+from api.dependencies import CurrentUser, LibrarianUser
 from db.session import get_session
 from schemas.events import EventCreate, EventRead, EventUpdate
 from services.librarian.event_service import (
@@ -20,7 +20,7 @@ events_router = APIRouter(prefix="/events", tags=["Events"])
 @events_router.post("/", response_model=EventRead)
 async def create_event(
         data: EventCreate,
-        current_user: CurrentUser,
+        current_user: LibrarianUser,
         db: AsyncSession = Depends(get_session),
 ):
     return await create_event_service(data, current_user.id, db)
@@ -30,7 +30,7 @@ async def create_event(
 async def update_event(
         event_id: int,
         data: EventUpdate,
-        current_user: CurrentUser,
+        current_user: LibrarianUser,
         db: AsyncSession = Depends(get_session),
 ):
     return await update_event_service(event_id, data, current_user.id, db)
@@ -39,7 +39,7 @@ async def update_event(
 @events_router.delete("/{event_id}")
 async def delete_event(
         event_id: int,
-        current_user: CurrentUser,
+        current_user: LibrarianUser,
         db: AsyncSession = Depends(get_session),
 ):
     return await delete_event_service(event_id, current_user.id, db)
