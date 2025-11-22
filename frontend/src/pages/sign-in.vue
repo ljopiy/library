@@ -17,7 +17,7 @@
         <NInput placeholder="Пароль"></NInput>
         <button>Забыли свой пароль?</button>
       </form>
-      <NButton>Войти</NButton>
+      <NButton type="primary">Войти</NButton>
     </div>
   </div>
 </template>
@@ -31,6 +31,9 @@ import iconBtn from '@/components/ui/icon-btn.vue';
 <style scoped>
 .page-wrapper {
   background-color: #F7742A;
+  display: flex;
+  flex-direction: column;
+
 }
 
 form {
@@ -69,14 +72,16 @@ form button {
 
 .login {
   background-color: white;
-  border-radius: 5%;
+  border-radius: 20px 20px 0 0;
+
   padding: 24px;
   border: none;
-  border-top: 2px solid white;
+
   display: flex;
   flex-direction: column;
   gap: 65px;
   padding-bottom: 20%;
+  flex: 1;
 }
 
 h1 {

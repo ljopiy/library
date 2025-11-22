@@ -15,7 +15,7 @@ const themeOverrides = {
     colorHoverPrimary: '#FF8A65',
     colorPressedPrimary: '#E55A2B',
     borderPrimary: '#FF6B35',
-    borderRadius: '8px',
+    borderRadius: '6px',
     heightMedium: '40px'
   },
   Input: {
