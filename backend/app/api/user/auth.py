@@ -41,14 +41,14 @@ async def login_form(
         user = await authenticate_user_by_ticket(db, username, password)
         if not user:
             raise HTTPException(status_code=401, detail="Invalid credentials")
-
+        print(1)
         access_token = create_access_token(
             user_id=user.id,
             ticket_id=user.ticket_id,
             role=user.role.value,
         )
 
-        return {"access_token": access_token, "token_type": "bearer"}
+        return {"access_token": access_token, "token_type": "bearer", "user_role": user.role.value}
 
     except SQLAlchemyError as e:
         await db.rollback()
