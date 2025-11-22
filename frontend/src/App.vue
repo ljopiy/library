@@ -41,6 +41,5 @@ const themeOverrides = {
   .page-wrapper {
     max-width: 400px;
     margin: 0 auto;
-    padding: 15px 5px 0 5px;
   }
 </style>
