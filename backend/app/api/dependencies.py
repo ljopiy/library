@@ -13,7 +13,6 @@ from services.user_service.user_service import get_user_by_id
 
 o_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
-
 DBSession = Annotated[AsyncSession, Depends(get_session)]
 Token = Annotated[str, Depends(o_scheme)]
 

@@ -27,26 +27,12 @@ class Book(Base):
     available = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
-    images = relationship(
-        "BookImage",
-        back_populates="book",
-        cascade="all, delete-orphan",
-        lazy="selectin"
-    )
-
+    images = relationship("BookImage", back_populates="book", cascade="all, delete-orphan", lazy="selectin")
     series_id = Column(Integer, ForeignKey("series.id"), nullable=True)
-    series = relationship(
-        "Series",
-        back_populates="books",
-        lazy="joined"
-    )
+    series = relationship("Series", back_populates="books", lazy="joined")
+    genres = relationship("Genre", secondary=book_genre_association, back_populates="books", lazy="selectin")
 
-    genres = relationship(
-        "Genre",
-        secondary=book_genre_association,
-        back_populates="books",
-        lazy="selectin"
-    )
+    copies = relationship("BookCopy", back_populates="book", cascade="all, delete-orphan")
 
     @property
     def genre_ids(self):

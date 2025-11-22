@@ -5,7 +5,7 @@ from typing import List
 from fastapi import APIRouter, Depends, UploadFile
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.dependencies import LibrarianUser
+from api.dependencies import LibrarianUser, CurrentUser
 from db.session import get_session
 from schemas.book import BookCreate, BookRead, BookUpdate, BookImageRead
 from services.librarian.book_service import create_book_service, update_book_service, delete_book_service, \
@@ -30,7 +30,7 @@ async def create_book(
 
 @librarian_books_router.get("/", response_model=List[BookRead])
 async def get_all_books(
-        current_user: LibrarianUser,
+        current_user: CurrentUser,
         db: AsyncSession = Depends(get_session),
 ):
     """Получение списка всех книг"""
