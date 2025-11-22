@@ -4,13 +4,13 @@
       <img src="/public/assets/icon/heart.svg" alt="">
     </div>
     <div class="img">
-      <img src="/public/assets/book1.png" alt="">
+      <img :src="getMainImage" alt="">
     </div>
     <div class="title">
-      <h3>Дед мороз картавый нос</h3>
+      <h3>{{ book.title }}</h3>
     </div>
     <div class="description">
-      <p>Подарок на Новый год под ёлку от Маши Рупасовой / 3 книги</p>
+      <p>{{ book.description }}</p>
     </div>
     <div class="rating">
       <div class="star">
@@ -27,7 +27,23 @@
 </template>
 
 <script setup>
+import { computed } from 'vue';
 import { NButton } from 'naive-ui';
+import { baseUrl } from '@/stores/counter';
+
+
+
+const props = defineProps({
+  book: {
+    type: Object,
+    required: true
+  }
+});
+
+const getMainImage = computed(() => {
+  console.log( baseUrl + props.book.images[0].file_path)
+  return baseUrl + props.book.images[0].file_path;
+});
 </script>
 
 <style scoped>
@@ -53,6 +69,19 @@ import { NButton } from 'naive-ui';
 
 .description > p {
   font-size: 10px;
+}
+
+.description {
+  max-width: 100%; /* Или конкретная ширина */
+}
+
+.description p {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  margin: 0; /* Убираем стандартные отступы */
 }
 
 span {
