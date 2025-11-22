@@ -1,5 +1,5 @@
 <template>
-  <NButton>sdfdsdfsfsd</NButton>
+  <NButton type="primary">sdfdsdfsfsd</NButton>
 </template>
 
 <script setup>
