@@ -28,13 +28,13 @@ async def list_ratings_service(book_id: int, db: AsyncSession):
     return result.scalars().all()
 
 
-async def delete_rating_service(book_id: int, user_id: int, db: AsyncSession):
+async def delete_rating_service(rating_id: int, user_id: int, db: AsyncSession):
     result = await db.execute(
-        select(BookRating).where(BookRating.book_id == book_id, BookRating.user_id == user_id)
+        select(BookRating).where(BookRating.id == rating_id, BookRating.user_id == user_id)
     )
     rating = result.scalar_one_or_none()
     if not rating:
-        raise HTTPException(status_code=404, detail="Оценка не найдена")
+        raise HTTPException(status_code=404, detail="Оценка не найдена или нет прав на удаление")
 
     await db.delete(rating)
     await db.commit()

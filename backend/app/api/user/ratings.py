@@ -12,7 +12,6 @@ from services.user_service.rating_service import add_or_update_rating_service, l
 ratings_router = APIRouter(prefix="/ratings")
 
 
-
 @ratings_router.post("/{book_id}", response_model=RatingRead)
 async def rate_book(
         book_id: int,
@@ -28,6 +27,10 @@ async def list_ratings(book_id: int, db: AsyncSession = Depends(get_session)):
     return await list_ratings_service(book_id, db)
 
 
-@ratings_router.delete("/{book_id}")
-async def delete_rating(book_id: int, current_user: CurrentUser, db: AsyncSession = Depends(get_session)):
-    return await delete_rating_service(book_id, current_user.id, db)
+@ratings_router.delete("/{rating_id}")
+async def delete_rating(
+        rating_id: int,
+        current_user: CurrentUser,
+        db: AsyncSession = Depends(get_session),
+):
+    return await delete_rating_service(rating_id, current_user.id, db)
