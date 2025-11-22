@@ -40,11 +40,9 @@ class UserLogin(BaseModel):
 
 
 class UserRead(BaseModel):
-    """
-    Схема для возврата информации о пользователе.
-    """
     id: int
     ticket_id: str
+    email: EmailStr | None = None
     role: UserRoles
     is_active: bool
     created_at: datetime
