@@ -36,7 +36,7 @@ async def search_books(
         db: AsyncSession = Depends(get_session),
         title: Optional[str] = Query(None, description="Поиск по названию"),
         author: Optional[str] = Query(None, description="Поиск по автору"),
-        genre_id: Optional[int] = Query(None, description="Фильтр по жанру"),
+        genre_name: Optional[str] = Query(None, description="Фильтр по жанру (название)"),
         language: Optional[str] = Query(None, description="Фильтр по языку"),
         available: Optional[bool] = Query(None, description="Фильтр по доступности"),
         sort_by: Optional[str] = Query("created_at", description="Поле сортировки"),
@@ -46,27 +46,37 @@ async def search_books(
         selectinload(Book.genres),
         selectinload(Book.series),
         selectinload(Book.images),
+        selectinload(Book.ratings),
     )
 
     if title:
         query = query.where(Book.title.ilike(f"%{title}%"))
     if author:
         query = query.where(Book.author.ilike(f"%{author}%"))
-    if genre_id:
-        query = query.join(Book.genres).where(Book.genres.any(id=genre_id))
+    if genre_name:
+        query = query.join(Book.genres).where(Book.genres.any(name=genre_name))
     if language:
         query = query.where(Book.language == language)
     if available is not None:
         query = query.where(Book.available == available)
 
-    sort_column = getattr(Book, sort_by, Book.created_at)
-    if sort_order == "desc":
-        query = query.order_by(sort_column.desc())
-    else:
-        query = query.order_by(sort_column.asc())
+    allowed_sorts = {
+        "created_at": Book.created_at,
+        "title": Book.title,
+        "author": Book.author,
+        "published_date": Book.published_date,
+    }
+    sort_column = allowed_sorts.get(sort_by, Book.created_at)
+
+    query = query.order_by(sort_column.desc() if sort_order == "desc" else sort_column.asc())
 
     result = await db.execute(query)
-    return result.scalars().all()
+    books = result.scalars().all()
+
+    return [
+        BookRead.from_orm(book).copy(update={"average_rating": book.calc_average_rating()})
+        for book in books
+    ]
 
 
 @librarian_books_router.get("/{book_id}", response_model=BookRead)

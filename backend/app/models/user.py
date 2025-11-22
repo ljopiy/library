@@ -32,3 +32,5 @@ class User(Base):
         back_populates="favorited_by",
         lazy="selectin"
     )
+
+    ratings = relationship("BookRating", back_populates="user", cascade="all, delete-orphan")

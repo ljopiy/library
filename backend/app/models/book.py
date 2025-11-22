@@ -1,8 +1,7 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Text, Date, Boolean, ForeignKey, DateTime, Table
+from sqlalchemy import Column, Integer, String, Text, Date, Boolean, ForeignKey, DateTime, Table, Float, func
 from sqlalchemy.orm import relationship
-
 from db.base import Base
 from models.user_favorites import user_favorites
 
@@ -40,6 +39,12 @@ class Book(Base):
         back_populates="favorites",
         lazy="selectin"
     )
+    ratings = relationship("BookRating", back_populates="book", cascade="all, delete-orphan", lazy="selectin")
+
+    def calc_average_rating(self) -> float | None:
+        if not self.ratings or len(self.ratings) == 0:
+            return None
+        return round(sum(r.rating for r in self.ratings) / len(self.ratings), 2)
 
     @property
     def genre_ids(self):

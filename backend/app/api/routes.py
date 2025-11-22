@@ -10,6 +10,7 @@ from api.librarian.user import librarian_user_router
 from api.orders.order import orders_router
 from api.user import auth
 from api.user.favorite import favorites_router
+from api.user.ratings import ratings_router
 from api.user.user import me_router
 
 api_router = APIRouter(prefix="/api")
@@ -27,3 +28,4 @@ api_router.include_router(librarian_genres_series_router, tags=["Genres & Series
 api_router.include_router(book_copy_router, tags=["Book Copy"])
 api_router.include_router(events_router, tags=["Events"])
 api_router.include_router(orders_router, tags=["Orders"])
+api_router.include_router(ratings_router, tags=["Ratings"])

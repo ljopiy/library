@@ -49,9 +49,10 @@ class BookRead(BaseModel):
     genres: List[GenreRead] = []
 
     images: List[BookImageRead] = []
+    average_rating: Optional[float] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class BookUpdate(BaseModel):
