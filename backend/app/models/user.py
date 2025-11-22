@@ -24,6 +24,8 @@ class User(Base):
     orders = relationship("Order", back_populates="user", cascade="all, delete-orphan", lazy="selectin")
     ticket = relationship("ReaderTicket", back_populates="user")
 
+    created_events = relationship("Event", back_populates="creator", lazy="selectin")
+
     favorites = relationship(
         "Book",
         secondary=user_favorites,
