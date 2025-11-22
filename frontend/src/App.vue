@@ -29,9 +29,16 @@ const themeOverrides = {
 </script>
 
 <template>
-  <NConfigProvider :theme-overrides="themeOverrides">
-    <RouterView />
-  </NConfigProvider>
+  <div class="page-wrapper">
+    <NConfigProvider :theme-overrides="themeOverrides">
+      <RouterView />
+    </NConfigProvider>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+  .page-wrapper {
+    max-width: 400px;
+    min-height: 100vh;
+  }
+</style>
