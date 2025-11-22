@@ -8,6 +8,11 @@ const router = createRouter({
       path: '/sign-in',
       name: 'SignIn',
       component: SignIn,
+    },
+    {
+      path: '/',
+      name: 'Test',
+      component: Test,
     }
   ],
 })

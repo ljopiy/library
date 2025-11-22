@@ -28,10 +28,6 @@ const themeOverrides = {
   }
 }
 
-app.use(NaiveUI, {
-  themeOverrides: themeOverrides
-})
-
 import App from './App.vue'
 import router from './router'
 
@@ -39,6 +35,9 @@ const pinia = createPinia()
 pinia.use(piniaPluginPersistedstate)
 
 const app = createApp(App)
+app.use(NaiveUI, {
+  themeOverrides: themeOverrides
+})
 app.use(pinia)
 app.use(router)
 app.mount('#app')
