@@ -24,7 +24,17 @@ const router = createRouter({
           path: '/book-collection',
           name: 'BookCollection',
           component: BookCollection,
-        }
+        },
+        {
+          path: '/account',
+          name: 'Account',
+          component: Account,
+        },
+        {
+          path: '/reviews-account',
+          name: 'reviewsAccount',
+          component: ReviewsAccount
+        },
       ]
     },
     {
@@ -33,27 +43,15 @@ const router = createRouter({
       component: SignIn,
     },
     {
-<<<<<<< HEAD
       path: '/book',
       name: 'Book',
       component: Book,
     },
     {
-      path: '/account',
-      name: 'Account',
-      component: Account,
-    },
-    {
-      path: '/reviews-account',
-      name: 'reviewsAccount',
-      component: ReviewsAccount,
-=======
       path: '/map',
       name: 'Map',
       component: Map,
->>>>>>> b50f1f25fc2c3b0c1b34de3d439f4a63ba176487
     }
-
   ],
 
 })
