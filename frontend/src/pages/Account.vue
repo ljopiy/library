@@ -5,7 +5,7 @@
       <h1>Алина Хусяинова</h1>
     </div>
     <div class="likes">
-      <button>Избранное</button>
+      <button><h4>Избранное</h4></button>
       <ul>
         <bookCard></bookCard>
         <bookCard></bookCard>
@@ -23,6 +23,7 @@
       <Alert></Alert>
       <Alert></Alert>
     </div>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -30,6 +31,7 @@
 import bookCard from '@/components/shared/bookCard.vue';
 import { NButton } from 'naive-ui';
 import Alert from '@/components/shared/alert.vue';
+import Footer from '@/components/shared/footer.vue';
 </script>
 
 <style scoped>
@@ -52,7 +54,8 @@ import Alert from '@/components/shared/alert.vue';
 .page-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 15px;
+  padding-bottom: 100px;
 }
 .likes {
   background-color: #F3F3F3;
@@ -72,7 +75,6 @@ import Alert from '@/components/shared/alert.vue';
 .likes button {
   width: 30%;
   border: none;
-  padding-left: 13px;
 }
 .header {
   display: flex;
@@ -80,6 +82,9 @@ import Alert from '@/components/shared/alert.vue';
   margin: 0;
   gap: 10px;
 
+}
+.header img {
+  padding-top: 5px;
 }
 .alerts {
   background-color: #F3F3F3;

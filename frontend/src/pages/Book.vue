@@ -65,6 +65,7 @@
         </ul>
       </div>
     </div>
+    <Footer></Footer>
   </div>
 </template>
 
@@ -72,9 +73,13 @@
 import iconBtn from '@/components/ui/icon-btn.vue';
 import reviewCard from '@/components/shared/reviewCard.vue';
 import bookCard from '@/components/shared/bookCard.vue';
+import Footer from '@/components/shared/footer.vue';
 </script>
 
 <style>
+.page-wrapper {
+  padding-bottom: 200px;
+}
 .header {
   padding: 10px 19px;
 }
@@ -90,14 +95,13 @@ import bookCard from '@/components/shared/bookCard.vue';
 .similar-list {
   list-style: none;
   display: flex;
-  gap: 5px;
+  gap: 10px;
   justify-content: space-between;
   flex-wrap: wrap;
+
 }
 .reviews-list {
   list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;

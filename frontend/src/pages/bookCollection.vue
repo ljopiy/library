@@ -56,9 +56,11 @@ h2{
 .book-feed {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
   flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
+  width: 100%;
   margin-top: 20px;
   margin-bottom: 90px;
 }

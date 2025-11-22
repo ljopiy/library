@@ -6,6 +6,9 @@ import ReviewsAccount from '@/pages/ReviewsAccount.vue'
 import MainLayout from '@/layouts/paddingLayout.vue'
 import BookCollection from '@/pages/bookCollection.vue'
 import Map from '@/components/map.vue'
+import bookingPage from '@/pages/bookingPage.vue'
+import bookingSuccess from '@/components/shared/bookingSuccess.vue'
+import bookPoint from '@/pages/bookPoint.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -35,6 +38,26 @@ const router = createRouter({
           name: 'reviewsAccount',
           component: ReviewsAccount
         },
+        {
+          path: '/booking',
+          name: 'bookingPage',
+          component: bookingPage,
+        },
+        {
+          path: '/success',
+          name: 'bookingSuccess',
+          component: bookingSuccess
+        },
+        {
+          path: '/book',
+          name: 'Book',
+          component: Book,
+        },
+        {
+          path: '/book-point',
+          name: 'bookPoint',
+          component: bookPoint
+        }
       ]
     },
     {
@@ -42,11 +65,7 @@ const router = createRouter({
       name: 'SignIn',
       component: SignIn,
     },
-    {
-      path: '/book',
-      name: 'Book',
-      component: Book,
-    },
+
     {
       path: '/map',
       name: 'Map',
