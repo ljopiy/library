@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import SidnIn from '@/views/sign-in.vue'
+import SidnIn from '@/pages/sign-in.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
