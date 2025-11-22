@@ -28,11 +28,10 @@
   width: 100%;
   background-color: #F3F3F3;
   border-radius: 10px;
-  width: 90%;
   padding: 6px;
   display: flex;
   justify-content: space-between;
-
+  box-shadow: 2px 2px 4px 0px rgba(34, 60, 80, 0.2);
 }
 
 .review-score {
