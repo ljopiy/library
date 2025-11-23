@@ -16,8 +16,7 @@
       </ul>
     </div>
     <div class="rezerv">
-      <NButton><p>Забронированные книги</p></NButton>
-        {{ orderList }}
+      <h2>Забронированные книги</h2>
         <BookedCard
           v-for="(book, i) in orderList"
           :key="i"
@@ -76,6 +75,20 @@ async function saveChanges() {
 </script>
 
 <style scoped>
+
+.rezerv{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 5px;
+  height: 100%;
+  width: 100%;
+}
+
+.rezerv-btn {
+  margin-bottom: 10px;
+}
+
 .rezerv button {
   width: 100%;
   display: flex;

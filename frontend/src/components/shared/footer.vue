@@ -3,29 +3,39 @@
     <div class="action-btn">
       <ul>
         <li>
-          <IconBtn class="nav-btn">
-              <img src="/assets/icon/search.svg" alt="">
-          </IconBtn>
+          <router-link to="/search">
+            <IconBtn class="nav-btn">
+              <img src="/assets/icon/search.svg" alt="Поиск">
+            </IconBtn>
+          </router-link>
         </li>
         <li>
-          <IconBtn class="nav-btn">
-            <img src="/assets/icon/line.svg" alt="">
-          </IconBtn>
+          <router-link to="/book-collection">
+            <IconBtn class="nav-btn">
+              <img src="/assets/icon/line.svg" alt="Каталог">
+            </IconBtn>
+          </router-link>
         </li>
         <li>
-          <IconBtn class="nav-btn">
-            <img src="/assets/icon/main.svg" alt="">
-          </IconBtn>
+          <router-link to="/">
+            <IconBtn class="nav-btn">
+              <img src="/assets/icon/main.svg" alt="Главная">
+            </IconBtn>
+          </router-link>
         </li>
         <li>
-          <IconBtn class="nav-btn">
-            <img src="/assets/icon/MapPin.svg" alt="">
-          </IconBtn>
+          <router-link to="/map">
+            <IconBtn class="nav-btn">
+              <img src="/assets/icon/MapPin.svg" alt="Карта">
+            </IconBtn>
+          </router-link>
         </li>
         <li>
-          <IconBtn class="nav-btn">
-            <img src="/assets/icon/User.svg" alt="">
-          </IconBtn>
+          <router-link to="/account">
+            <IconBtn class="nav-btn">
+              <img src="/assets/icon/User.svg" alt="Профиль">
+            </IconBtn>
+          </router-link>
         </li>
       </ul>
     </div>

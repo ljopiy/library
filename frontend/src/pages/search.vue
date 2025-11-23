@@ -4,6 +4,7 @@
       <div class="filter-component">
         <h5>Поиск по названию</h5>
         <NInput
+          class="inp"
           placeholder="Введите название книги"
           v-model:value="formData.title"
         ></NInput>
@@ -33,6 +34,7 @@
       <div class="filter-component">
         <h5>Автор</h5>
         <NInput
+          class="inp"
           placeholder="Поиск по имени автора"
           v-model:value="formData.author"
         ></NInput>
@@ -163,7 +165,11 @@ function buildQueryString(data) {
   scrollbar-width: none;
   transition: all 0.5s ease;
   margin-bottom: 90px;
-  padding: 15px 15px;
+  padding: 15px 15px;;
+}
+
+.inp {
+  flex: 1;
 }
 
 .filter-wrapper {

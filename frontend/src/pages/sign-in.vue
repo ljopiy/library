@@ -14,7 +14,7 @@
       </div>
       <form @submit.prevent="handleSubmit">
         <NInput placeholder="Логин" v-model:value="formData.username"></NInput>
-        <NInput placeholder="Пароль" v-model:value="formData.password"></NInput>
+        <NInput placeholder="Пароль" v-model:value="formData.password" type="password"></NInput>
         <button>Забыли свой пароль?</button>
       </form>
       <NButton type="primary" @click="handleSubmit">Войти</NButton>

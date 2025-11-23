@@ -25,7 +25,7 @@ app = FastAPI(
     openapi_url="/openapi.json"
 )
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
+app.mount("static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
     CORSMiddleware,

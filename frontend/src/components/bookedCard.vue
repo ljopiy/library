@@ -3,8 +3,11 @@
     <div class="favorite">
       <img src="/public/assets/icon/heart.svg" alt="">
     </div>
+    <div class="img">
+      <img :src="getMainImage" alt="">
+    </div>
     <div class="title">
-      <h3>{{ book.title }}</h3>
+      <h3>{{ book.books[0].title }}</h3>
     </div>
     <div class="description end-date">
       <p>{{ book.due_date }}</p>
@@ -30,12 +33,16 @@ const props = defineProps({
 });
 
 const getMainImage = computed(() => {
-  console.log( baseUrl + props.book.images[0].file_path)
-  return baseUrl + props.book.images[0].file_path;
+  if(props.book.books[0].images.lenght !== 0){
+    return new URL('/public/assets/book1.png', import.meta.url).href
+  } else {
+    console.log( baseUrl + props.book.books[0].images[0].file_path)
+    return baseUrl + props.book.books[0].file_path;
+  }
 });
 
 async function deletBooked(){
-  await store.deletBooked(props.book.id);
+  await store.deletOrder(props.book.id);
 }
 </script>
 

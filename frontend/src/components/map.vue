@@ -71,10 +71,12 @@
       <button @click="selectedArea = null" class="close-btn">Закрыть</button>
     </div>
   </div>
+  <Footer></Footer>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted, computed } from 'vue';
+import Footer from './shared/footer.vue';
 
 // Состояния
 const hoveredArea = ref(null);

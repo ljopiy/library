@@ -4,10 +4,10 @@
     <div class="reki">
 
       <h4>Рекомендуем к прочтению</h4>
-      <ul>
+      <!-- <ul>
         <bookCard></bookCard>
         <bookCard></bookCard>
-      </ul>
+      </ul> -->
     </div>
     <div class="coworking">
       <h4>Наш коворкинг</h4>
@@ -27,6 +27,15 @@
       </ul>
       <NButton type="primary">Забронировать</NButton>
     </div>
+    <div class="event">
+      <div class="event-card">
+        <h3>Встреча с писателем</h3>
+        <p>Приглашаем на встречу с новым русским писателем Иваном Марковым! <br>
+        На этой встрече Автор расскажет о начале своё пути, где берёт вдохновение и ответ на все интересующие вас вопросы!</p>
+        <span>03.12 в 12:00. По адресу Свердлова 25</span>
+        <NButton type="primary" class="event-btn">Записаться</NButton>
+      </div>
+    </div>
     <Footer></Footer>
   </div>
 </template>
@@ -38,6 +47,23 @@ import Footer from '@/components/shared/footer.vue';
 </script>
 
 <style scoped>
+.event{
+  background-color: #F3F3F3;
+  padding: 15px 10px;
+  margin-bottom: 105px;
+  border-radius: 10px;
+}
+
+.event-btn {
+  width: 100%;
+}
+
+.event-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
 
 .reki {
   display: flex;
@@ -89,5 +115,7 @@ h4 {
   border-radius: 20px;
   padding: 10px;
 }
+
+
 
 </style>
