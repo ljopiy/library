@@ -16,7 +16,6 @@ WORKDIR /app
 COPY --from=builder /install /usr/local
 COPY --from=builder /app /app
 
-
 ENV PYTHONPATH=/app/app
 
 CMD ["uvicorn", "main:app", "--reload"]

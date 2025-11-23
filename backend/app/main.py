@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.staticfiles import StaticFiles
 
 from api.routes import api_router
-from core.logging import logger
 from db.base import create_tables
 
 
@@ -18,7 +17,14 @@ async def lifespan(app: FastAPI):
     print("Stopping app...")
 
 
-app = FastAPI(title="Library Management System", lifespan=lifespan)
+app = FastAPI(
+    title="Library Management System",
+    lifespan=lifespan,
+    docs_url="/docs",
+    redoc_url="/redoc",
+    openapi_url="/openapi.json"
+)
+
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 app.add_middleware(
@@ -37,14 +43,11 @@ app.include_router(api_router)
 
 @app.get("/")
 def root():
-    logger.info("Root endpoint accessed")
     return {
         "message": "Добро пожаловать в Library Management System!",
-        "description": (
-            "API для управления библиотекарями, пользователями, книгами, жанрами и сериями."
-        ),
-        "docs_url": "http://localhost:8000/docs#/",
-        "redoc_url": "http://localhost:8000/redoc",
+        "description": "API для управления библиотекарями, пользователями, книгами, жанрами и сериями.",
+        "docs_url": "/docs",
+        "redoc_url": "/redoc",
         "status": "OK",
     }
 

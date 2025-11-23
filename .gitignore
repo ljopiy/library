@@ -38,7 +38,7 @@ htmlcov/
 *.sock
 
 # Env variables
-backend/.env
+.env
 *.env
 
 # Docker (если вдруг используешь)
