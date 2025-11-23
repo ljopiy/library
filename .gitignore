@@ -44,3 +44,4 @@ htmlcov/
 # Docker (если вдруг используешь)
 docker-compose.override.yml
 /backend/app/static/
+/frontend/.vite/
