@@ -44,6 +44,7 @@ class BookRead(BaseModel):
     language: str
     available: bool
     created_at: datetime
+    favorite: bool = False
 
     series: Optional[SeriesRead]
     genres: List[GenreRead] = []

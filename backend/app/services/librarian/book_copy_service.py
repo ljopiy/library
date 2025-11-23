@@ -6,18 +6,19 @@ from models.book import Book
 from models.book_copy import BookCopy
 
 
-async def create_book_copy_service(book_id: int, inventory_number: str, db: AsyncSession) -> BookCopy:
-    result = await db.execute(select(Book).where(Book.id == book_id))
-    book = result.scalar_one_or_none()
-    if not book:
-        raise HTTPException(status_code=404, detail="Книга не найдена")
+async def create_book_copy_service(book_id: int, inventory_number: str, db: AsyncSession):
+    result = await db.execute(
+        select(BookCopy).where(BookCopy.inventory_number == inventory_number)
+    )
+    existing = result.scalar_one_or_none()
+    if existing:
+        raise HTTPException(status_code=400, detail="Экземпляр с таким инвентарным номером уже существует")
 
     copy = BookCopy(book_id=book_id, inventory_number=inventory_number, status="available")
     db.add(copy)
     await db.commit()
     await db.refresh(copy)
     return copy
-
 
 async def list_book_copies_service(book_id: int, db: AsyncSession):
     result = await db.execute(select(BookCopy).where(BookCopy.book_id == book_id))

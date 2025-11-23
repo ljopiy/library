@@ -7,7 +7,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from api.dependencies import LibrarianUser
+from api.dependencies import LibrarianUser, CurrentUser
 from db.session import get_session
 from models.book import Book
 from schemas.book import BookRead, BookUpdate, BookImageRead, BookCreate
@@ -33,7 +33,9 @@ async def create_book(
 
 @librarian_books_router.get("/", response_model=List[BookRead])
 async def search_books(
+        current_user: CurrentUser,
         db: AsyncSession = Depends(get_session),
+
         title: Optional[str] = Query(None, description="Поиск по названию"),
         author: Optional[str] = Query(None, description="Поиск по автору"),
         genre_name: Optional[str] = Query(None, description="Фильтр по жанру (название)"),
@@ -47,6 +49,7 @@ async def search_books(
         selectinload(Book.series),
         selectinload(Book.images),
         selectinload(Book.ratings),
+        selectinload(Book.favorited_by),
     )
 
     if title:
@@ -54,7 +57,7 @@ async def search_books(
     if author:
         query = query.where(Book.author.ilike(f"%{author}%"))
     if genre_name:
-        query = query.join(Book.genres).where(Book.genres.any(name=genre_name))
+        query = query.where(Book.genres.any(name=genre_name))
     if language:
         query = query.where(Book.language == language)
     if available is not None:
@@ -67,14 +70,18 @@ async def search_books(
         "published_date": Book.published_date,
     }
     sort_column = allowed_sorts.get(sort_by, Book.created_at)
-
     query = query.order_by(sort_column.desc() if sort_order == "desc" else sort_column.asc())
 
     result = await db.execute(query)
     books = result.scalars().all()
 
     return [
-        BookRead.from_orm(book).copy(update={"average_rating": book.calc_average_rating()})
+        BookRead.from_orm(book).copy(
+            update={
+                "average_rating": book.calc_average_rating(),
+                "favorite": any(u.id == current_user.id for u in book.favorited_by)
+            }
+        )
         for book in books
     ]
 
