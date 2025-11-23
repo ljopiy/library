@@ -3,10 +3,11 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
+from schemas.book import BookRead
+
 
 class OrderCreate(BaseModel):
     copy_ids: List[int]
-
 
 
 class OrderRead(BaseModel):
@@ -18,7 +19,8 @@ class OrderRead(BaseModel):
     returned_at: Optional[datetime]
     is_active: bool
     is_issued: bool
-    copy_ids: List[int]
+    books: List[BookRead] = []
 
     class Config:
-        orm_mode = True
+        from_attributes = True
+

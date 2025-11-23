@@ -11,6 +11,6 @@ class BookCopy(Base):
     book_id = Column(Integer, ForeignKey("books.id"), nullable=False)
     inventory_number = Column(String(50), unique=True, nullable=False)
     status = Column(String(20), default="available")
+    book = relationship("Book", back_populates="copies", lazy="joined")
 
-    book = relationship("Book", back_populates="copies")
     orders = relationship("Order", secondary="order_copies_association", back_populates="copies")
