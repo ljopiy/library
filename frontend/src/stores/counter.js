@@ -10,7 +10,9 @@ export const useDataStore = defineStore('data', {
     books: [],
     booksCopy: [],
     userInfo: [],
-    orderList: []
+    orderList: [],
+    newUserData: [],
+    bookedList: []
   }),
   actions: {
     setTokenRole(auth_key, role) {
@@ -64,28 +66,28 @@ export const useDataStore = defineStore('data', {
         throw error
       }
     },
-async PostOrder(id){
-  try {
-    const response = await axios.post(`${baseUrl}/api/orders/`,
-      { // данные запроса (body)
-        copy_ids: [id] // или copy_id: id в зависимости от API
-      },
-      { // конфигурация (включая headers)
-        headers: {
-          Authorization: `Bearer ${this.auth_key}`,
-          'Content-Type': 'application/json',
-        }
+    async PostOrder(id){
+      try {
+        const response = await axios.post(`${baseUrl}/api/orders/`,
+          { // данные запроса (body)
+            copy_ids: [id] // или copy_id: id в зависимости от API
+          },
+          { // конфигурация (включая headers)
+            headers: {
+              Authorization: `Bearer ${this.auth_key}`,
+              'Content-Type': 'application/json',
+            }
+          }
+        )
+
+        console.log('Заказ создан:', response.data)
+        return response.data
+
+      } catch (error) {
+        console.error('Error creating order:', error.response?.data || error.message)
+        throw error
       }
-    )
-
-    console.log('Заказ создан:', response.data)
-    return response.data
-
-  } catch (error) {
-    console.error('Error creating order:', error.response?.data || error.message)
-    throw error
-  }
-},
+    },
     async GetUserInfo(props){
         try {
           const response = await axios.get(`${baseUrl}/api/me/`, {
@@ -119,11 +121,11 @@ async PostOrder(id){
           }
         })
 
-        console.log('Заказ создан:', response.data)
+        console.log('Данные обновлены:', response.data)
         return response.data
 
       } catch (error) {
-        console.error('Error creating order:', error.response?.data || error.message)
+        console.error('Error updating user:', error.response?.data || error.message)
         throw error
       }
     },
@@ -144,11 +146,83 @@ async PostOrder(id){
         throw error
       }
     },
+    async getAllBooked(){
+        try {
+          const response = await axios.get(`${baseUrl}/api/orders/`, {
+          headers: {
+            Authorization: `Bearer ${this.auth_key}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        console.log(response)
+        console.log('Брони:', response.data)
+        this.bookedList = response.data
+      } catch (error) {
+        console.log(this.auth_key)
+        console.error('Ошибка при получении данных:', error.response?.data || error.message)
+        throw error
+      }
+    },
+    async deletOrder(id){
+      try {
+          const response = await axios.delete(`${baseUrl}/api/orders/${id}/cancel`, {
+          headers: {
+            Authorization: `Bearer ${this.auth_key}`,
+            'Content-Type': 'application/json',
+          },
+        })
+        console.log(response)
+        console.log('Отменено', response.data)
+      } catch (error) {
+        console.log(this.auth_key)
+        console.error('Ошибка отмены', error.response?.data || error.message)
+        throw error
+      }
+    },
+    async creatUser() {
+      try {
+        const formData = new FormData();
+        formData.append('role', 'admin');
+
+        const response = await axios.post(`${baseUrl}/api/auth/register`, formData, {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          }
+        });
+        console.log('Пользователь создан:', response.data);
+        this.newUserData = response.data
+        return response.data;
+      } catch (error) {
+        console.error('Ошибка при создании пользователя:', error.response?.data || error.message);
+        throw error;
+      }
+    },
+    // В вашем store (counter.js) добавьте этот метод в actions:
+async createBook(bookData) {
+  try {
+    const response = await axios.post(`${baseUrl}/api/librarian/books/`, bookData, {
+      headers: {
+        Authorization: `Bearer ${this.auth_key}`,
+        'Content-Type': 'application/json',
+      }
+    });
+
+    console.log('Книга создана:', response.data);
+    return response.data;
+
+  } catch (error) {
+    console.error('Ошибка при создании книги:', error.response?.data || error.message);
+    throw error;
+  }
+},
   },
+
   getters: {
     getBooks: (state) => state.books,
     сopiesBook: (state) => state.booksCopy,
-    orderListget: (state) => state.orderList
+    orderListget: (state) => state.orderList,
+    getNewUser: (state) => state.newUserData,
+    booked: (state) => state.bookedList
   },
   persist: {
     key: 'data-store',
