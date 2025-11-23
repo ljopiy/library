@@ -58,10 +58,10 @@
       <div class="similar">
         <h2>Похожие книги</h2>
         <ul class="similar-list">
+          <!-- <bookCard></bookCard>
           <bookCard></bookCard>
           <bookCard></bookCard>
-          <bookCard></bookCard>
-          <bookCard></bookCard>
+          <bookCard></bookCard> -->
         </ul>
       </div>
     </div>
@@ -77,13 +77,14 @@ import Footer from '@/components/shared/footer.vue';
 </script>
 
 <style>
-.page-wrapper {
-  padding-bottom: 200px;
-}
+/* .page-wrapper {
+  padding-bottom: 90px;
+} */
 .header {
   padding: 10px 19px;
+  align-items: center;
 }
-.header button {
+.header {
   padding: 0;
 }
 

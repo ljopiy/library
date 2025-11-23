@@ -1,7 +1,7 @@
 <template>
   <div class="page-wrapper">
     <div class="header">
-      <iconBtn><img src="../../public/assets/icon/icon-arrow-black.svg"></img></iconBtn>
+      <iconBtn><img src="../../public/assets/icon/icon-arrow-black.svg" class="img"></img></iconBtn>
       <h1>Бронирование</h1>
     </div>
     <div class="main">
@@ -18,22 +18,46 @@
         </ul>
     </div>
     <div  class="booking">
-      <NButton type="primary"><p>Забронировать</p></NButton>
+      <NButton type="primary" @click="booking"><p>Забронировать</p></NButton>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useRoute } from 'vue-router'
 import iconBtn from '@/components/ui/icon-btn.vue';
-import { NInput } from 'naive-ui';
+import { NInput, NButton } from 'naive-ui';
 import addressSelect from '@/components/shared/addressSelect.vue';
-import { NButton } from 'naive-ui';
+import { computed, onMounted } from 'vue';
+import { useDataStore } from '@/stores/counter';
+import router from '@/router';
+
+const route = useRoute();
+const store = useDataStore();
+const bookId = route.params.id;
+
+const booksCopy = computed(() => store.сopiesBook)
+
+onMounted(async () => {
+  await store.GetCopiesBook(bookId)
+})
+
+async function booking(){
+  console.log(booksCopy.value)
+  try{
+    await store.PostOrder(booksCopy.value[0].id)
+    router.push('/account')
+  } catch {
+    console.error('Ошибка')
+  }
+}
 </script>
 
 <style scoped>
 .booking {
   display: flex;
   justify-content: center;
+  margin-bottom: 90px;
 }
 .page-wrapper {
   display: flex;
@@ -63,12 +87,16 @@ ul {
   flex-direction: row;
   text-align: center;
 }
-.header button {
+.header {
   padding-top: 15px;
 }
 h1 {
   width: 100%;
+}
 
+.img{
+  width: 15px;
+  height: 15px;
 }
 </style>
 

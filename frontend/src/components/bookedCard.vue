@@ -3,26 +3,13 @@
     <div class="favorite">
       <img src="/public/assets/icon/heart.svg" alt="">
     </div>
-    <div class="img">
-      <img :src="getMainImage" alt="">
-    </div>
     <div class="title">
       <h3>{{ book.title }}</h3>
     </div>
-    <div class="description">
-      <p>{{ book.description }}</p>
+    <div class="description end-date">
+      <p>{{ book.due_date }}</p>
     </div>
-    <div class="rating">
-      <div class="star">
-        <img src="/public/assets/icon/feather.svg" alt="">
-        <span>4,5</span>
-      </div>
-      <div class="comments">
-        <img src="/public/assets/icon/comment-vector.svg" alt="">
-        <span>1232</span>
-      </div>
-    </div>
-    <NButton type="primary" style="width: 90%; height: 30px;" @click="routeToBooking">Забронировать</NButton>
+    <NButton class="delet-btn" type="primary" style="width: 90%; height: 30px;" @click="deletBooked">Отменить бронь</NButton>
   </div>
 </template>
 
@@ -31,9 +18,10 @@ import { computed } from 'vue';
 import { NButton } from 'naive-ui';
 import { baseUrl } from '@/stores/counter';
 import router from '@/router';
+import { useDataStore } from '@/stores/counter';
 
 
-
+const store = useDataStore();
 const props = defineProps({
   book: {
     type: Object,
@@ -46,9 +34,8 @@ const getMainImage = computed(() => {
   return baseUrl + props.book.images[0].file_path;
 });
 
-function routeToBooking(){
-  const id = props.book.id
-  router.push(`/booking/${id}`)
+async function deletBooked(){
+  await store.deletBooked(props.book.id);
 }
 </script>
 
@@ -63,6 +50,14 @@ function routeToBooking(){
   background-color: #F3F3F3;
   border-radius: 14px;
   position: relative;
+}
+
+:deep(.delet-btn) {
+  background-color: rgb(184, 0, 0);
+}
+
+:deep(.delet-btn:active) {
+  background-color: rgb(220, 0, 0);
 }
 
 .img {
@@ -82,14 +77,14 @@ function routeToBooking(){
   max-width: 100%; /* Или конкретная ширина */
 }
 
-.description p {
+/* .description p {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
-  margin: 0; /* Убираем стандартные отступы */
-}
+  margin: 0;
+} */
 
 span {
   font-size: 10px;
@@ -114,6 +109,5 @@ span {
   right: 10px;
   top: 6px;
 }
-
 
 </style>
