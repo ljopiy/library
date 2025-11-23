@@ -10,6 +10,8 @@ import bookingPage from '@/pages/bookingPage.vue'
 import bookingSuccess from '@/components/shared/bookingSuccess.vue'
 import bookPoint from '@/pages/bookPoint.vue'
 import Search from '@/pages/search.vue'
+import AdminLayout from '@/layouts/adminLayout.vue'
+import AdminInfo from '@/pages/AdminInfo.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -59,6 +61,11 @@ const router = createRouter({
           name: 'bookPoint',
           component: bookPoint
         },
+        {
+          path: '/admin-page',
+          name: "AdminInfo",
+          component: AdminInfo
+        }
       ]
     },
     {
@@ -75,7 +82,7 @@ const router = createRouter({
       path: '/map',
       name: 'Map',
       component: Map,
-    }
+    },
   ],
 
 })
